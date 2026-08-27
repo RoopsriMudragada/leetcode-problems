@@ -1,28 +1,32 @@
 class Solution {
 public:
+//sliding window
     string shortestBeautifulSubstring(string s, int k) {
         int n = s.size();
+        int i = 0;
+        int j = 0;
+        string result = "";
+        int cntones = 0;
+        while(j < n){
+            if(s[j] == '1'){
+                cntones++;
+            }
 
-        for(int len = k; len <= n; len++){
-            string result = "";
-
-            for(int start = 0; start <= n - len; start++){
-                string temp = s.substr(start, len);
-                
-                int cnt = 0;
-                for(auto &it : temp){
-                    cnt += (it == '1') ? 1 : 0;
+            while(cntones > k || s[i] == '0'){
+                if(s[i] == '1'){
+                    cntones--;
                 }
-                if(cnt == k){
-                    if(result.empty() || temp < result){
-                        result = temp;
-                    }
+                i++;
+            }
+            if(cntones == k){
+                string temp = s.substr(i, j - i + 1);
+
+                if(result.empty() || result.length() > j - i + 1 || (temp.length() == result.length() && temp < result)){
+                    result = temp;
                 }
             }
-            if(!result.empty()){
-                return result;
-            }
+            j++;
         }
-        return "";
+        return result;
     }
 };
