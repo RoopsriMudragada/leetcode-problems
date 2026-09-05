@@ -2,22 +2,27 @@ class Solution {
 public:
     int firstStableIndex(vector<int>& nums, int k) {
         int n = nums.size();
-        int stableIndx = -1;
-        int instabilityScore;
-        for(int i = 0; i < n; i++){
-            int maxi = INT_MIN;
-            for(int j = 0; j <= i; j++){
-                maxi = max(maxi, nums[j]);
-            }
-            int mini = INT_MAX;
-            for(int j = i; j < n; j++){
-                mini = min(mini, nums[j]);
-            }
-            instabilityScore = maxi - mini;
 
-            if(instabilityScore <= k){
+        vector<int>prefixmax(n);
+        vector<int>suffixmin(n);
+        int stableindx = -1;
+        prefixmax[0] = nums[0];
+        for(int i = 1; i < n; i++){
+            prefixmax[i] = max(prefixmax[i - 1], nums[i]);
+        }
+
+        suffixmin[n - 1] = nums[n - 1];
+        for(int i = n - 2; i >= 0; i--){
+            suffixmin[i] = min(suffixmin[i + 1], nums[i]);
+        }
+        for(int i = 0;i < n;i++){
+            cout << prefixmax[i] << " " << suffixmin[i] << "\n";
+        }
+        for(int i = 0; i < n; i++){
+            int instabilityscore = prefixmax[i] - suffixmin[i];
+            if(instabilityscore <= k){
                 return i;
-            } 
+            }
         }
         return -1;
     }
