@@ -11,30 +11,28 @@
  */
 class Solution {
 public:
-    int averageOfSubtree(TreeNode* root) {
-        if(root == NULL){
-            return 0;
+    int result;
+
+    pair<int, int>solve(TreeNode* root){
+        if(!root){
+            return {0, 0};
         }
-        int cnt = 0;
-        int sum = findSum(root, cnt);
-        int result = 0;
-        if(root -> val == (sum / cnt)){
+
+        auto p1 = solve(root->left);
+        auto p2 = solve(root->right);
+
+        int totalsum = p1.first + p2.first + root->val;
+        int totalcnt = p1.second + p2.second + 1;
+
+        if(root->val == totalsum / totalcnt){
             result++;
         }
-        result += averageOfSubtree(root->left);
-        result += averageOfSubtree(root->right);
-        return result;
+        return {totalsum, totalcnt};
     }
 
-    int findSum(TreeNode* root, int & cnt){
-        if(root == NULL){
-            return 0;
-        }
-        cnt++;
-
-        int lsum = findSum(root -> left, cnt);
-        int rsum = findSum(root-> right, cnt);
-
-        return lsum + rsum + root -> val;
+    int averageOfSubtree(TreeNode* root) {
+        result = 0;
+        solve(root);
+        return result;
     }
 };
