@@ -1,18 +1,13 @@
 class Solution {
 public:
     unordered_set<string> st;
-
-    void solve(string &s, int idx, int balance,
-               int removeOpen, int removeClose,
-               string &curr) {
-
-        // Invalid state
-        if (balance < 0)
+    void solve(string &s, int idx, int balance, int removeopen, int removeclose, string &curr){
+        if(balance < 0){
             return;
+        }
 
-        // End of string
-        if (idx == s.size()) {
-            if (balance == 0 && removeOpen == 0 && removeClose == 0) {
+        if(idx == s.size()){
+            if(balance == 0 && removeopen == 0 && removeclose == 0){
                 st.insert(curr);
             }
             return;
@@ -20,79 +15,58 @@ public:
 
         char ch = s[idx];
 
-        // Normal character
-        if (ch != '(' && ch != ')') {
+        if(ch != '(' && ch != ')'){
             curr.push_back(ch);
-            solve(s, idx + 1, balance,
-                  removeOpen, removeClose, curr);
+            solve(s, idx + 1, balance, removeopen, removeclose, curr);
             curr.pop_back();
         }
 
-        // '('
-        else if (ch == '(') {
-
-            // Remove '('
-            if (removeOpen > 0) {
-                solve(s, idx + 1, balance,
-                      removeOpen - 1, removeClose, curr);
+        else if(ch == '('){
+            if(removeopen > 0){
+                solve(s, idx + 1, balance, removeopen - 1, removeclose, curr);
             }
-
-            // Keep '('
+            
             curr.push_back('(');
-            solve(s, idx + 1, balance + 1,
-                  removeOpen, removeClose, curr);
+            solve(s, idx + 1, balance + 1, removeopen, removeclose, curr);
             curr.pop_back();
         }
 
-        // ')'
-        else {
-
-            // Remove ')'
-            if (removeClose > 0) {
-                solve(s, idx + 1, balance,
-                      removeOpen, removeClose - 1, curr);
+        else{
+            if(removeclose > 0){
+                solve(s, idx + 1, balance, removeopen, removeclose - 1, curr);
             }
 
-            // Keep ')' only if it has a matching '('
-            if (balance > 0) {
+            if(balance > 0){
                 curr.push_back(')');
-                solve(s, idx + 1, balance - 1,
-                      removeOpen, removeClose, curr);
+                solve(s, idx + 1, balance - 1, removeopen, removeclose, curr);
                 curr.pop_back();
             }
         }
     }
 
     vector<string> removeInvalidParentheses(string s) {
-
-        int balance = 0;
-        int removeClose = 0;
-
-        // Step 1: calculate minimum removals
-        for (char ch : s) {
-
-            if (ch == '(') {
-                balance++;
+        int  n = s.size();
+        vector<string> ans;
+        int balanced = 0;
+        int removeclose = 0;
+        int removeopen = 0;
+        for(auto ch : s){
+            if(ch == '('){
+                balanced++;
             }
-            else if (ch == ')') {
-
-                if (balance > 0) {
-                    balance--;
+            else if(ch == ')'){
+                if(balanced > 0){
+                    balanced--;
                 }
-                else {
-                    removeClose++;
+                else{
+                    removeclose++;
                 }
             }
         }
+        removeopen = balanced;
 
-        int removeOpen = balance;
-
-        // Step 2: backtracking
         string curr;
-
-        solve(s, 0, 0,
-              removeOpen, removeClose,
-              curr);
+        solve(s, 0, 0, removeopen, removeclose, curr);
 
         return vector<string>(st.begin(), st.end());
     }
